@@ -1,4 +1,4 @@
 name = input("Please enter your name: ")
-age = int(input("Please enter your age: "))
+age = input("Please enter your age: ")
 
-print(name, age)
+print(f"my name is {name} and my age is {age}")
