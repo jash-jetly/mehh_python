@@ -1,3 +1,4 @@
-import meh
+from meh import y
+#print(meh.x)
+print(y)
 
-print(meh.x)
