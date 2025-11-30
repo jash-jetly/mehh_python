@@ -11,9 +11,6 @@
             theme: {
                 extend: {
                     colors: {
-                        'dark-bg': '#0a0a0a',
-                        'dark-secondary': '#141414',
-                        'dark-tertiary': '#1a1a1a',
                         'accent': '#fe7171',
                         'accent-hover': '#ff5555',
                         'success': '#3fb950',
@@ -33,36 +30,72 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+            background: transparent;
         }
 
         .message-bubble {
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px) scale(0.95);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
-        .glow {
-            box-shadow: 0 0 20px rgba(254, 113, 113, 0.3);
+        .glass {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-light {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-focus:focus {
+            outline: none;
+            border-color: #fe7171;
+            box-shadow: 0 0 0 4px rgba(254, 113, 113, 0.15);
+            background: rgba(30, 30, 30, 0.8);
+        }
+
+        .btn-hover {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-hover:active {
+            transform: translateY(0);
         }
 
         .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+            width: 6px;
         }
 
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        .scrollbar-hide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .gradient-text {
@@ -72,80 +105,66 @@
             background-clip: text;
         }
 
-        .glass {
-            background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .recording {
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
-        .input-focus:focus {
-            outline: none;
-            border-color: #fe7171;
-            box-shadow: 0 0 0 3px rgba(254, 113, 113, 0.1);
-        }
+        @keyframes pulse {
 
-        .btn-hover:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
+            0%,
+            100% {
+                opacity: 1;
+            }
 
-        .btn-hover:active {
-            transform: translateY(0);
+            50% {
+                opacity: 0.5;
+            }
         }
     </style>
 </head>
 
-<body class="bg-dark-bg text-white h-screen overflow-hidden">
+<body class="text-white h-screen overflow-hidden">
     <div class="h-full flex flex-col">
-        <!-- Header -->
-        <div class="glass border-b border-gray-800 px-6 py-4">
+        <!-- Minimal Header -->
+        <div class="glass px-6 py-3">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <h1 class="text-xl font-bold gradient-text">THAKUR KE HAATH</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div id="status" class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                        <span class="text-xs text-gray-400">Ready</span>
-                    </div>
+                <h1 class="text-lg font-bold gradient-text">THAKUR KE HAATH</h1>
+                <div id="status" class="flex items-center space-x-2">
+                    <div class="w-1.5 h-1.5 bg-success rounded-full"></div>
+                    <span class="text-xs text-gray-400">Ready</span>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex overflow-hidden">
-            <!-- Chat Area -->
-            <div class="flex-1 flex flex-col p-6">
-                <div id="messages" class="flex-1 overflow-y-auto scrollbar-hide space-y-4 mb-4">
-                    <!-- Welcome Message -->
-                    <div class="text-center py-8">
-                        <div class="text-6xl mb-4">🚀</div>
-                        <p class="text-gray-400 text-sm">Ready to assist! Try "open Firefox" or ask me to run commands.
-                        </p>
-                    </div>
+        <div class="flex-1 flex flex-col p-6 overflow-hidden">
+            <!-- Messages -->
+            <div id="messages" class="flex-1 overflow-y-auto scrollbar-hide space-y-3 mb-4">
+                <div class="text-center py-12">
+                    <p class="text-gray-500 text-sm">Start a conversation...</p>
                 </div>
+            </div>
 
-                <!-- Input Area -->
-                <div class="glass rounded-2xl p-4">
-                    <div class="flex items-end space-x-3">
-                        <div class="flex-1">
-                            <textarea id="messageInput" rows="1" placeholder="Type your command or question..."
-                                class="w-full bg-dark-tertiary text-white rounded-xl px-4 py-3 resize-none input-focus transition-all duration-200 border border-gray-800"
-                                onkeydown="handleKeyPress(event)"></textarea>
-                        </div>
-                        <button onclick="sendMessage()"
-                            class="bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 btn-hover flex items-center space-x-2">
-                            <span>Send</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </button>
-                        <button onclick="startVoiceInput()" id="voiceBtn"
-                            class="bg-dark-tertiary hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 btn-hover flex items-center space-x-2 border border-gray-800">
-                            <span>🎤</span>
-                        </button>
+            <!-- Input Area -->
+            <div class="glass rounded-2xl p-3">
+                <div class="flex items-end space-x-2">
+                    <div class="flex-1">
+                        <textarea id="messageInput" rows="1" placeholder="Ask me anything..."
+                            class="w-full bg-transparent text-white rounded-xl px-4 py-3 resize-none input-focus transition-all duration-200 border border-gray-700"
+                            onkeydown="handleKeyPress(event)"></textarea>
                     </div>
+                    <button onclick="toggleVoiceInput()" id="voiceBtn"
+                        class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-xl transition-all duration-200 btn-hover border border-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button onclick="sendMessage()"
+                        class="bg-accent hover:bg-accent-hover text-white px-5 py-3 rounded-xl font-medium transition-all duration-200 btn-hover">
+                        Send
+                    </button>
                 </div>
             </div>
         </div>
@@ -155,6 +174,50 @@
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
         const statusElement = document.getElementById('status');
+        const voiceBtn = document.getElementById('voiceBtn');
+
+        let isRecording = false;
+
+        async function toggleVoiceInput() {
+            if (isRecording) {
+                return;
+            }
+
+            isRecording = true;
+            voiceBtn.classList.remove('bg-gray-800');
+            voiceBtn.classList.add('recording', 'bg-accent');
+            setStatus('Listening... Speak now!', 'accent');
+
+            try {
+                const response = await fetch('/api/voice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    addMessage(data.error, 'system');
+                } else if (data.text) {
+                    messageInput.value = data.text;
+                    addMessage(data.text, 'user');
+
+                    // Auto-send the message
+                    setTimeout(() => {
+                        sendMessage();
+                    }, 100);
+                }
+            } catch (error) {
+                addMessage('Voice input error: ' + error.message, 'system');
+            } finally {
+                voiceBtn.classList.remove('recording', 'bg-accent');
+                voiceBtn.classList.add('bg-gray-800');
+                setStatus('Ready', 'success');
+                isRecording = false;
+            }
+        }
 
         function handleKeyPress(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -164,36 +227,37 @@
         }
 
         function addMessage(content, type = 'user') {
+            // Remove welcome message
+            const welcome = messagesContainer.querySelector('.text-center');
+            if (welcome) welcome.remove();
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message-bubble';
 
             if (type === 'user') {
                 messageDiv.innerHTML = `
-                    <div class="flex justify-end">
-                        <div class="bg-accent text-white rounded-2xl px-5 py-3 max-w-md shadow-lg">
-                            <p class="text-sm leading-relaxed">${escapeHtml(content)}</p>
+                    <div class="flex justify-end mb-2">
+                        <div class="glass-light rounded-2xl px-4 py-3 max-w-lg">
+                            <p class="text-sm leading-relaxed text-white">${escapeHtml(content)}</p>
                         </div>
                     </div>
                 `;
             } else if (type === 'ai') {
                 messageDiv.innerHTML = `
-                    <div class="flex justify-start">
-                        <div class="glass rounded-2xl px-5 py-3 max-w-2xl">
-                            <p class="text-sm leading-relaxed text-gray-200">${formatMarkdown(content)}</p>
+                    <div class="flex justify-start mb-2">
+                        <div class="glass rounded-2xl px-4 py-3 max-w-2xl">
+                            <div class="text-sm leading-relaxed text-gray-100 space-y-2">${formatResponse(content)}</div>
                         </div>
                     </div>
                 `;
             } else if (type === 'command') {
                 messageDiv.innerHTML = `
-                    <div class="flex justify-start">
-                        <div class="bg-dark-tertiary rounded-xl px-4 py-3 w-full border border-gray-800">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <span class="text-success text-xs font-semibold">COMMAND</span>
-                            </div>
-                            <code class="text-success font-mono text-sm">$ ${escapeHtml(content.command)}</code>
+                    <div class="flex justify-start mb-2">
+                        <div class="glass rounded-xl px-4 py-3 w-full max-w-3xl">
+                            <code class="text-success font-mono text-sm block mb-2">${escapeHtml(content.command)}</code>
                             ${content.output ? `
-                                <div class="mt-3 pt-3 border-t border-gray-800">
-                                    <pre class="text-gray-400 font-mono text-xs whitespace-pre-wrap">${escapeHtml(content.output)}</pre>
+                                <div class="mt-2 pt-2 border-t border-gray-700">
+                                    <pre class="text-gray-400 font-mono text-xs whitespace-pre-wrap leading-relaxed">${escapeHtml(content.output)}</pre>
                                 </div>
                             ` : ''}
                         </div>
@@ -201,8 +265,8 @@
                 `;
             } else if (type === 'system') {
                 messageDiv.innerHTML = `
-                    <div class="text-center">
-                        <p class="text-xs text-gray-500 italic">${escapeHtml(content)}</p>
+                    <div class="text-center mb-2">
+                        <p class="text-xs text-gray-500">${escapeHtml(content)}</p>
                     </div>
                 `;
             }
@@ -212,8 +276,13 @@
         }
 
         function setStatus(text, color = 'success') {
+            const colors = {
+                'success': 'bg-success',
+                'accent': 'bg-accent',
+                'error': 'bg-red-500'
+            };
             statusElement.innerHTML = `
-                <div class="w-2 h-2 bg-${color} rounded-full animate-pulse"></div>
+                <div class="w-1.5 h-1.5 ${colors[color]} rounded-full"></div>
                 <span class="text-xs text-gray-400">${text}</span>
             `;
         }
@@ -222,12 +291,10 @@
             const message = messageInput.value.trim();
             if (!message) return;
 
-            // Add user message
             addMessage(message, 'user');
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
-            // Set status
             setStatus('Thinking...', 'accent');
 
             try {
@@ -242,12 +309,10 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    addMessage(`Error: ${data.error}`, 'system');
+                    addMessage(data.error, 'system');
                 } else {
-                    // Add AI response
                     addMessage(data.response, 'ai');
 
-                    // Add command results
                     if (data.commands && data.commands.length > 0) {
                         data.commands.forEach(cmd => {
                             addMessage(cmd, 'command');
@@ -257,13 +322,9 @@
 
                 setStatus('Ready', 'success');
             } catch (error) {
-                addMessage(`Error: ${error.message}`, 'system');
-                setStatus('Error', 'red-500');
+                addMessage(error.message, 'system');
+                setStatus('Ready', 'error');
             }
-        }
-
-        function startVoiceInput() {
-            addMessage('🎤 Voice input not yet implemented in web version', 'system');
         }
 
         function escapeHtml(text) {
@@ -272,13 +333,25 @@
             return div.innerHTML;
         }
 
-        function formatMarkdown(text) {
-            // Simple markdown formatting
+        function formatResponse(text) {
             text = escapeHtml(text);
-            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            text = text.replace(/`(.*?)`/g, '<code class="bg-dark-bg px-1 py-0.5 rounded text-accent">$1</code>');
+
+            // Format code blocks
+            text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                return `<div class="bg-black bg-opacity-40 rounded-lg p-3 my-2 border border-gray-800">
+                    <pre class="text-gray-300 font-mono text-xs leading-relaxed overflow-x-auto">${code.trim()}</pre>
+                </div>`;
+            });
+
+            // Format inline code
+            text = text.replace(/`([^`]+)`/g, '<code class="bg-black bg-opacity-40 px-1.5 py-0.5 rounded text-accent font-mono text-xs">$1</code>');
+
+            // Format bold
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+
+            // Format line breaks
             text = text.replace(/\n/g, '<br>');
+
             return text;
         }
 
@@ -288,7 +361,6 @@
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        // Focus input on load
         messageInput.focus();
     </script>
 </body>

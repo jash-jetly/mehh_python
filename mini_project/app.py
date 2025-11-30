@@ -7,6 +7,7 @@ import subprocess
 import re
 import threading
 import webview
+import speech_recognition as sr
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +27,7 @@ Always assume macOS with zsh shell.
 Be concise and precise."""
 
 chat_history = []
+recognizer = sr.Recognizer()
 
 @app.route('/')
 def index():
@@ -81,6 +83,25 @@ def chat():
             'commands': command_results
         })
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/voice', methods=['POST'])
+def voice():
+    """Handle voice input using Python speech recognition"""
+    try:
+        with sr.Microphone() as source:
+            recognizer.adjust_for_ambient_noise(source, duration=0.5)
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+        
+        # Recognize speech
+        text = recognizer.recognize_google(audio)
+        return jsonify({'text': text})
+        
+    except sr.WaitTimeoutError:
+        return jsonify({'error': 'No speech detected'}), 400
+    except sr.UnknownValueError:
+        return jsonify({'error': 'Could not understand audio'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -150,16 +171,16 @@ def speak_response(text):
         print(f"Speech error: {e}")
 
 def start_app():
-    """Start Flask app in a frameless window"""
+    """Start Flask app in a transparent frameless window"""
     window = webview.create_window(
         'THAKUR KE HAATH',
         app,
         width=900,
         height=600,
         resizable=True,
-        frameless=False,
-        easy_drag=True,
-        background_color='#0a0a0a'
+        frameless=True,
+        easy_drag=False,
+        transparent=True
     )
     webview.start()
 
@@ -167,3 +188,5 @@ if __name__ == '__main__':
     # Start the app with pywebview
     threading.Thread(target=lambda: app.run(debug=False, port=5000, use_reloader=False), daemon=True).start()
     start_app()
+
+
