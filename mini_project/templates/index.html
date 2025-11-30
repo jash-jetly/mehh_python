@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THAKUR KE HAATH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0a0a0a',
+                        'dark-secondary': '#141414',
+                        'dark-tertiary': '#1a1a1a',
+                        'accent': '#fe7171',
+                        'accent-hover': '#ff5555',
+                        'success': '#3fb950',
+                    },
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+        }
+
+        .message-bubble {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glow {
+            box-shadow: 0 0 20px rgba(254, 113, 113, 0.3);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fe7171 0%, #ff5555 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-focus:focus {
+            outline: none;
+            border-color: #fe7171;
+            box-shadow: 0 0 0 3px rgba(254, 113, 113, 0.1);
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hover:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="bg-dark-bg text-white h-screen overflow-hidden">
+    <div class="h-full flex flex-col">
+        <!-- Header -->
+        <div class="glass border-b border-gray-800 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-xl font-bold gradient-text">THAKUR KE HAATH</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="status" class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                        <span class="text-xs text-gray-400">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Chat Area -->
+            <div class="flex-1 flex flex-col p-6">
+                <div id="messages" class="flex-1 overflow-y-auto scrollbar-hide space-y-4 mb-4">
+                    <!-- Welcome Message -->
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-4">🚀</div>
+                        <p class="text-gray-400 text-sm">Ready to assist! Try "open Firefox" or ask me to run commands.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="glass rounded-2xl p-4">
+                    <div class="flex items-end space-x-3">
+                        <div class="flex-1">
+                            <textarea id="messageInput" rows="1" placeholder="Type your command or question..."
+                                class="w-full bg-dark-tertiary text-white rounded-xl px-4 py-3 resize-none input-focus transition-all duration-200 border border-gray-800"
+                                onkeydown="handleKeyPress(event)"></textarea>
+                        </div>
+                        <button onclick="sendMessage()"
+                            class="bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 btn-hover flex items-center space-x-2">
+                            <span>Send</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </button>
+                        <button onclick="startVoiceInput()" id="voiceBtn"
+                            class="bg-dark-tertiary hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 btn-hover flex items-center space-x-2 border border-gray-800">
+                            <span>🎤</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const statusElement = document.getElementById('status');
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function addMessage(content, type = 'user') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-bubble';
+
+            if (type === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-end">
+                        <div class="bg-accent text-white rounded-2xl px-5 py-3 max-w-md shadow-lg">
+                            <p class="text-sm leading-relaxed">${escapeHtml(content)}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'ai') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-start">
+                        <div class="glass rounded-2xl px-5 py-3 max-w-2xl">
+                            <p class="text-sm leading-relaxed text-gray-200">${formatMarkdown(content)}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'command') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-start">
+                        <div class="bg-dark-tertiary rounded-xl px-4 py-3 w-full border border-gray-800">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="text-success text-xs font-semibold">COMMAND</span>
+                            </div>
+                            <code class="text-success font-mono text-sm">$ ${escapeHtml(content.command)}</code>
+                            ${content.output ? `
+                                <div class="mt-3 pt-3 border-t border-gray-800">
+                                    <pre class="text-gray-400 font-mono text-xs whitespace-pre-wrap">${escapeHtml(content.output)}</pre>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'system') {
+                messageDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500 italic">${escapeHtml(content)}</p>
+                    </div>
+                `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function setStatus(text, color = 'success') {
+            statusElement.innerHTML = `
+                <div class="w-2 h-2 bg-${color} rounded-full animate-pulse"></div>
+                <span class="text-xs text-gray-400">${text}</span>
+            `;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Set status
+            setStatus('Thinking...', 'accent');
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    addMessage(`Error: ${data.error}`, 'system');
+                } else {
+                    // Add AI response
+                    addMessage(data.response, 'ai');
+
+                    // Add command results
+                    if (data.commands && data.commands.length > 0) {
+                        data.commands.forEach(cmd => {
+                            addMessage(cmd, 'command');
+                        });
+                    }
+                }
+
+                setStatus('Ready', 'success');
+            } catch (error) {
+                addMessage(`Error: ${error.message}`, 'system');
+                setStatus('Error', 'red-500');
+            }
+        }
+
+        function startVoiceInput() {
+            addMessage('🎤 Voice input not yet implemented in web version', 'system');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatMarkdown(text) {
+            // Simple markdown formatting
+            text = escapeHtml(text);
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            text = text.replace(/`(.*?)`/g, '<code class="bg-dark-bg px-1 py-0.5 rounded text-accent">$1</code>');
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Focus input on load
+        messageInput.focus();
+    </script>
+</body>
+
+</html>
