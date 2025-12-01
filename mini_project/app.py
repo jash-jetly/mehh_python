@@ -88,21 +88,61 @@ def chat():
 
 @app.route('/api/voice', methods=['POST'])
 def voice():
-    """Handle voice input using Python speech recognition"""
+    """Handle voice input using SpeechRecognition capture + Gemini transcription"""
     try:
+        import tempfile
+        
+        # Use SpeechRecognition for robust recording and VAD
         with sr.Microphone() as source:
+            print("Adjusting for ambient noise...")
             recognizer.adjust_for_ambient_noise(source, duration=0.5)
-            audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+            print("Listening...")
+            # Capture audio with VAD (stops automatically when silence is detected)
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=15)
+            
+        print("Audio captured, transcribing...")
         
-        # Recognize speech
-        text = recognizer.recognize_google(audio)
-        return jsonify({'text': text})
+        # Get valid WAV data with headers (Crucial for Gemini)
+        wav_data = audio.get_wav_data()
         
+        # Use Gemini to transcribe
+        try:
+            # Create a temp file for the upload
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
+                temp_wav.write(wav_data)
+                temp_wav_path = temp_wav.name
+            
+            try:
+                # Upload to Gemini
+                audio_file = genai.upload_file(path=temp_wav_path, mime_type="audio/wav")
+                
+                # Transcribe
+                prompt = "Transcribe this audio exactly as spoken. Return ONLY the text."
+                response = model.generate_content([prompt, audio_file])
+                transcript = response.text.strip()
+                
+                if transcript:
+                    return jsonify({'text': transcript})
+                else:
+                    return jsonify({'error': 'No speech detected'}), 400
+            finally:
+                # Cleanup temp file
+                if os.path.exists(temp_wav_path):
+                    os.unlink(temp_wav_path)
+                
+        except Exception as gemini_error:
+            print(f"Gemini transcription error: {gemini_error}")
+            # Fallback to Google Speech Recognition if Gemini fails
+            print("Falling back to Google Speech Recognition...")
+            text = recognizer.recognize_google(audio)
+            return jsonify({'text': text})
+
     except sr.WaitTimeoutError:
         return jsonify({'error': 'No speech detected'}), 400
     except sr.UnknownValueError:
         return jsonify({'error': 'Could not understand audio'}), 400
     except Exception as e:
+        print(f"Voice error: {e}")
         return jsonify({'error': str(e)}), 500
 
 def extract_commands(text):
