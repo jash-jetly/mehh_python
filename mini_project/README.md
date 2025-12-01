@@ -6,11 +6,29 @@
 ### 🤔 **Ever wondered yeh kaise PC use karega?**
 *(Ever wondered how he would use a PC?)*
 
-![Thakur](https://static.abplive.com/wp-content/uploads/sites/2/2021/03/10014149/Sanjeev.jpg?impolicy=abp_cdn&imwidth=640)
+![Thakur](https://indianmemetemplates.com/wp-content/uploads/Thakur-Baldev-Singh-Sholay.jpg)
 
 **Simple hai boss! He uses this app!** 🎤💻
 
-Gabbar might have taken his hands, but he couldn't take his **Python skills** (and his Gemini API key). Now Thakur controls his entire Mac with just his voice!
+---
+
+### 🧐 **The Real Questions (Jo Janta Janna Chahti Hai)**
+
+![Ramlal](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO8AlwXpxnndwQTFpuXfSAzIdNjCcFeC4XjA&s)
+*(Ramlal waiting for command...)*
+
+> **"Yeh isko khilata tha par nehlaata kon tha?"** 🤔
+
+> **"Aur kuch aur baate bhi hai which I cannot say..."** 🤫
+
+---
+
+### 🤵 **Ramlal: The Original AI Assistant**
+
+Before Siri, before Alexa, before Gemini... there was **Ramlal**.
+
+But Ramlal is old school. He can bring the shawl, but cannot run a pc.
+That's why Thakur upgraded to **Thakur Ke Haath** (this app).
 
 ---
 
@@ -51,12 +69,6 @@ Just say *"Open YouTube"* or *"Create a folder named Gabbar_Ka_Adda"* and consid
     ```bash
     python3 app.py
     ```
-
----
-
-## 📸 Screenshots
-
-*Imagine a cool transparent window here... bas waisa hi hai.*
 
 ---
 
