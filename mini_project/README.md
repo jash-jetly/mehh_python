@@ -6,7 +6,7 @@
 ### 🤔 **Ever wondered yeh kaise PC use karega?**
 *(Ever wondered how he would use a PC?)*
 
-![Thakur](https://indianmemetemplates.com/wp-content/uploads/Thakur-Baldev-Singh-Sholay.jpg)
+![Thakur](https://c.ndtvimg.com/2023-07/ks8464ng_sholay-thakur_625x300_30_July_23.jpg)
 
 **Simple hai boss! He uses this app!** 🎤💻
 
