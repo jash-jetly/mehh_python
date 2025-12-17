@@ -5,7 +5,6 @@ import os
 
 
 def conversion_confirmation(func):
-    """Decorator to confirm and log conversion operations."""
     def wrapper(self, value, *args, **kwargs):
         result = func(self, value, *args, **kwargs)
         print(f"✓ Conversion confirmed: {value} → {result}")
@@ -14,10 +13,9 @@ def conversion_confirmation(func):
 
 
 class ValidationHandler:
-    """Handles validation of temperature inputs."""
     
-    MIN_TEMP_C = -273.15  # Absolute zero
-    MAX_TEMP_C = 1000000  # Arbitrary high limit
+    MIN_TEMP_C = -273.15
+    MAX_TEMP_C = 1000000
     
     @staticmethod
     def validate_temperature(value: float, scale: str) -> Tuple[bool, Optional[str]]:
@@ -26,7 +24,6 @@ class ValidationHandler:
         except (ValueError, TypeError):
             return False, "Invalid input: Temperature must be a number"
         
-        # Convert to Celsius for range checking
         if scale.upper() == 'C':
             temp_c = value
         elif scale.upper() == 'F':
@@ -36,7 +33,6 @@ class ValidationHandler:
         else:
             return False, f"Invalid scale: {scale}. Use 'C', 'F', or 'K'"
         
-        # Check realistic range
         if temp_c < ValidationHandler.MIN_TEMP_C:
             return False, f"Temperature below absolute zero ({ValidationHandler.MIN_TEMP_C}°C)"
         
@@ -47,9 +43,7 @@ class ValidationHandler:
 
 
 class TemperatureConverter:
-    """Handles temperature conversions between different scales."""
     
-    # Lambda functions for conversion formulas (static)
     celsius_to_fahrenheit = staticmethod(lambda c: (c * 9/5) + 32)
     fahrenheit_to_celsius = staticmethod(lambda f: (f - 32) * 5/9)
     celsius_to_kelvin = staticmethod(lambda c: c + 273.15)
@@ -62,11 +56,9 @@ class TemperatureConverter:
         from_scale = from_scale.upper()
         to_scale = to_scale.upper()
         
-        # If same scale, return value
         if from_scale == to_scale:
             return round(value, 2)
         
-        # Conversion logic
         conversion_map = {
             ('C', 'F'): self.celsius_to_fahrenheit,
             ('F', 'C'): self.fahrenheit_to_celsius,
@@ -113,7 +105,6 @@ class ConversionLogger:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         conversion_type = f"{source_scale} to {target_scale}"
         
-        # Add to in-memory history
         entry = {
             'timestamp': timestamp,
             'source_value': source_value,
@@ -124,7 +115,6 @@ class ConversionLogger:
         }
         self.history.append(entry)
         
-        # Write to CSV file
         with open(self.log_file, 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([timestamp, source_value, source_scale,
@@ -164,7 +154,6 @@ class Report:
             source_values.append(entry['source_value'])
             target_values.append(entry['target_value'])
         
-        # Find most common conversion
         most_common = max(conversion_counts.items(), key=lambda x: x[1])
         
         return {

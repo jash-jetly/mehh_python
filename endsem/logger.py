@@ -1,8 +1,3 @@
-"""
-Logger Module
-Provides enhanced logging functionality and data analysis features.
-"""
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
@@ -10,25 +5,12 @@ from datetime import datetime
 
 
 class DataAnalyzer:
-    """Analyzes conversion data using Pandas and creates visualizations."""
     
     def __init__(self, log_file: str = "conversion_log.csv"):
-        """
-        Initialize data analyzer.
-        
-        Args:
-            log_file: Path to CSV log file
-        """
         self.log_file = log_file
         self.df = None
     
     def load_data(self) -> bool:
-        """
-        Load conversion data from CSV file.
-        
-        Returns:
-            True if data loaded successfully, False otherwise
-        """
         try:
             if os.path.exists(self.log_file):
                 self.df = pd.read_csv(self.log_file)
@@ -41,42 +23,20 @@ class DataAnalyzer:
             return False
     
     def get_dataframe(self) -> pd.DataFrame:
-        """
-        Get conversion data as Pandas DataFrame.
-        
-        Returns:
-            DataFrame with conversion history
-        """
         if self.df is None:
             self.load_data()
         return self.df
     
     def analyze_conversion_frequency(self) -> pd.Series:
-        """
-        Analyze frequency of different conversion types.
-        
-        Returns:
-            Series with conversion type counts
-        """
         if self.df is None or self.df.empty:
             return pd.Series()
         
         return self.df['Conversion_Type'].value_counts()
     
     def analyze_temperature_distribution(self, scale: str = 'C') -> dict:
-        """
-        Analyze distribution of temperatures for a given scale.
-        
-        Args:
-            scale: Temperature scale to analyze ('C', 'F', or 'K')
-            
-        Returns:
-            Dictionary with distribution statistics
-        """
         if self.df is None or self.df.empty:
             return {}
         
-        # Filter for conversions from the specified scale
         scale_data = self.df[self.df['Source_Scale'] == scale]['Source_Value']
         
         if scale_data.empty:
@@ -92,12 +52,6 @@ class DataAnalyzer:
         }
     
     def create_frequency_chart(self, output_file: str = "conversion_frequency.png"):
-        """
-        Create bar chart showing conversion frequency.
-        
-        Args:
-            output_file: Output file path for chart
-        """
         if self.df is None or self.df.empty:
             print("No data available for chart creation")
             return
@@ -117,12 +71,6 @@ class DataAnalyzer:
         plt.close()
     
     def create_temperature_distribution_chart(self, output_file: str = "temperature_distribution.png"):
-        """
-        Create histogram showing temperature distribution.
-        
-        Args:
-            output_file: Output file path for chart
-        """
         if self.df is None or self.df.empty:
             print("No data available for chart creation")
             return
@@ -150,20 +98,12 @@ class DataAnalyzer:
         plt.close()
     
     def create_timeline_chart(self, output_file: str = "conversion_timeline.png"):
-        """
-        Create timeline chart showing conversions over time.
-        
-        Args:
-            output_file: Output file path for chart
-        """
         if self.df is None or self.df.empty:
             print("No data available for chart creation")
             return
         
-        # Convert timestamp to datetime
         self.df['Timestamp'] = pd.to_datetime(self.df['Timestamp'])
         
-        # Group by date and count conversions
         daily_counts = self.df.groupby(self.df['Timestamp'].dt.date).size()
         
         plt.figure(figsize=(12, 6))
@@ -179,7 +119,6 @@ class DataAnalyzer:
         plt.close()
     
     def display_data_summary(self):
-        """Display summary of conversion data."""
         if self.df is None or self.df.empty:
             print("No data available")
             return
